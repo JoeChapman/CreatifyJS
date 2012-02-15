@@ -1,6 +1,6 @@
-var Sky = Sky || {};
+var CreatifyJS = CreatifyJS || {};
 
-Sky.customEvents = {
+CreatifyJS.customEvents = {
 	
 	listeners: {},
 
