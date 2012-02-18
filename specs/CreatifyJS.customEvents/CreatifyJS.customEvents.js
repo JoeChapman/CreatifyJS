@@ -133,5 +133,30 @@ describe("Custom events", function () {
 		
 	});
 
+	describe("Calling fire() with an event and data", function () {
+		var observer = CreatifyJS.customEvents;
+		var data = {name: 'Joe'};
+		var flag = false;
+		var callBack = function (data) {
+			flag = true;
+		};
+		
+		beforeEach(function () {
+			observer.events = {
+				newEvent: [callBack]
+			};
+			observer.fire('newEvent', data);
+		});
+
+		afterEach(function () {
+			observer.events = {};	
+		});
+
+		it("Calls callBack() with data", function () {
+			expect(flag).toBe(true);
+		});
+
+	});
+
 
 });
