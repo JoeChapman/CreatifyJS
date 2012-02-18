@@ -2,31 +2,41 @@ var CreatifyJS = CreatifyJS || {};
 
 CreatifyJS.customEvents = {
 	
-	listeners: {},
+	events: {},
 
 	on: function(event, fn) {
-		if (!this.listeners[event]) {
-			this.listeners[event] = [];
+		if (typeof fn === 'undefined') {
+			return;
 		}
-		this.listeners[event].push(fn);
+		if (!this.events[event]) {
+			this.events[event] = [];
+		}
+		this.events[event].push(fn);
 	},
 	
 	off: function(event, fn) {
-		if (!this.listeners[event]) {
+		if (!this.events[event]) {
 			return;
 		}
-		
-		for(var i in this.listeners[event]) {
-			this.listeners[event].splice(i, 1);
-		}
+		var i, ev = this.events[event];
+
+		for (i = 0, len = ev.length; i < len; i++) {
+			if (typeof fn === 'function') {
+				if (ev[i] === fn) {
+					delete ev[i];
+				}	
+			} else {
+			 	ev.splice(i, 1);	
+			}
+		} 
 	},
 	
 	fire: function(event, data) {
-		if (!this.listeners[event]) {
+		if (!this.events[event]) {
 			return;
 		}
-		for(var i in this.listeners[event]) {
-			this.listeners[event][i].call(this, data);
+		for (var i in this.events[event]) {
+			this.events[event][i].call(this, data);
 		}
 	}
 };
