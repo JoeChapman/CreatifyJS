@@ -57,8 +57,8 @@ describe("Custom events", function () {
 	});
 
 	describe("Calling off() with an event", function () {
-		var observer = CreatifyJS.customEvents;
-		var callBack1 = function () {};
+		var observer = CreatifyJS.customEvents,
+			callBack1 = function () {};
 
 		beforeEach(function () {
 			// Add multiple callbacks to the event
@@ -103,10 +103,10 @@ describe("Custom events", function () {
 		});
 
 		describe("When multiple callbacks are registered", function () {
-			var callBack1 = function () {};
-			var callBack2 = function () {};
-			var callBack3 = function () {};
-			var callBack4 = function () {};
+			var callBack1 = function () {},
+				callBack2 = function () {},
+				callBack3 = function () {},
+				callBack4 = function () {};
 
 			beforeEach(function () {
 				// Add multiple callbacks to the event
@@ -134,12 +134,14 @@ describe("Custom events", function () {
 	});
 
 	describe("Calling fire() with an event and data", function () {
-		var observer = CreatifyJS.customEvents;
-		var data = {name: 'Joe'};
-		var flag = false;
-		var callBack = function (data) {
-			flag = true;
-		};
+		var observer = CreatifyJS.customEvents,
+			data = {name: 'Joe'},
+			expectedData,
+			flag = false,
+			callBack = function (data) {
+				flag = true;
+				expectedData = data;
+			};
 		
 		beforeEach(function () {
 			observer.events = {
@@ -154,6 +156,8 @@ describe("Custom events", function () {
 
 		it("Calls callBack() with data", function () {
 			expect(flag).toBe(true);
+			expect(data).toEqual(expectedData);
+			expect(expectedData.name).toBe('Joe');
 		});
 
 	});
