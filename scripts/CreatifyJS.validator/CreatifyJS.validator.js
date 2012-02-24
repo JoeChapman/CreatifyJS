@@ -9,11 +9,31 @@ window.CreatifyJS = window.CreatifyJS || {};
 		messages: [],
 
 		validate: function (data) {
-			var i, type, checker, isValid = false;
+			var i, type, tester, isValid = false;
 
 			for (i in data) {
 				if (data.hasOwnProperty(i)) {
-					// Is data[i] a valid type?
+					
+					// Get name of validator
+					type = this.config[i];
+                    tester = this.types[type];
+
+                    // if (!type) {
+                    // 	continue;
+                    // }
+
+                    // if (!tester) {
+                    // 	throw {
+                    // 		name: "ValidationError",
+                    // 		message: "No tester supplied for" + type;
+                    // 	}
+                    // }
+
+                    isValid = tester.validate(data[i]);
+
+                    if (!isValid) {
+                    	tester.errorHandler(data[i]);
+                    }
 				}
 			}
 
@@ -33,9 +53,13 @@ window.CreatifyJS = window.CreatifyJS || {};
     // script as well
 	validator.types = {
 		validEmail: {
-			validate: function () {},
-			instructions: '',
-			errorHandler: function () {}
+			validate: function (value) {
+				return /^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?$/.test(value);
+			},
+			instructions: 'Please enter a valid email.',
+			errorHandler: function (d) {
+				console.log(d);
+			}
 		},
 		notEmpty: {
 			validate: function () {},
