@@ -32,7 +32,7 @@ window.CreatifyJS = window.CreatifyJS || {};
                     isValid = tester.validate(data[i]);
 
                     if (!isValid) {
-                    	tester.errorHandler(data[i]);
+                    	tester.errorHandler(i);
                     }
 				}
 			}
@@ -46,7 +46,7 @@ window.CreatifyJS = window.CreatifyJS || {};
 	// configuration to another script
 	validator.config = {
 		email: 'validEmail',
-		contactName: 'notEmpty'
+		name: 'notEmpty'
 	};
 
     // Types could go in separate
@@ -57,14 +57,20 @@ window.CreatifyJS = window.CreatifyJS || {};
 				return /^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?$/.test(value);
 			},
 			instructions: 'Please enter a valid email.',
-			errorHandler: function (d) {
-				console.log(d);
+			errorHandler: function (id) {
+				var el = $('#'+id);
+				el.after('<span>'+this.instructions+'</span>');
 			}
 		},
 		notEmpty: {
-			validate: function () {},
-			instructions: '',
-			errorHandler: function () {}
+			validate: function (value) {
+				return value !== '';
+			},
+			instructions: 'This field cannot be empty',
+			errorHandler: function (id) {
+				var el = $('#'+id);
+				el.after('<span>'+this.instructions+'</span>');
+			}
 		}
 	}
 

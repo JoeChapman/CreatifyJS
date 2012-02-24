@@ -14,10 +14,25 @@
 
 </head>
 <body>  
+
+  <form id="fixture" method="" action="">
+      <fieldset>
+          <div class="field">
+              <label for="email">Email:</label>
+              <input id="email">
+          </div>
+          <div class="field">
+              <label for="name">Name:</label>
+              <input id="name">
+          </div>
+      </fieldset>
+  </form>
+
   <script type="text/javascript" src="CreatifyJS.validator.js"></script>
   <script type="text/javascript">
-      jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-      jasmine.getEnv().execute();
-    </script>
+    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+    jasmine.getEnv().execute();
+  </script>
+  
 </body>
 </html>
