@@ -32,21 +32,22 @@ window.CreatifyJS = window.CreatifyJS || {};
                     isValid = tester.validate(data[i]);
 
                     if (!isValid) {
-                    	tester.errorHandler(i);
+                    	if (typeof tester.errorHandler === 'function') {
+                            tester.errorHandler(i);
+                    	}
+                        $('#'+i).after('<span>'+tester.instructions+'</span>');
                     }
 				}
 			}
-
-
 		}
-
 	};
 
 	// Would make sense to move 
 	// configuration to another script
 	validator.config = {
 		email: 'validEmail',
-		name: 'notEmpty'
+		name:  'notEmpty',
+		phone: 'maxLen10'
 	};
 
     // Types could go in separate
@@ -71,6 +72,12 @@ window.CreatifyJS = window.CreatifyJS || {};
 				var el = $('#'+id);
 				el.after('<span>'+this.instructions+'</span>');
 			}
+		},
+		maxLen10: {
+			validate: function (value) {
+				
+			},
+			instructions: 'Please enter no more than 10 characters',
 		}
 	}
 
