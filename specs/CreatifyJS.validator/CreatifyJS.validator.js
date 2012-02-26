@@ -65,6 +65,7 @@ describe("Validator", function () {
 		    this.invalidPhone = {
 		    	phone: 12345678901
 		    };
+		    CreatifyJS.validator.validate(this.invalidPhone);
 		});
 		afterEach(function () {
 			this.fixture.find('span').remove();
@@ -72,7 +73,6 @@ describe("Validator", function () {
 		});
 
 		it("Appends the error message to the field", function () {
-			CreatifyJS.validator.validate(this.invalidPhone);
 			expect(this.fixture.find('#phone').next('span').text()).toContain(CreatifyJS.validator.types.maxLen10.instructions);
 		});
 
@@ -85,6 +85,9 @@ describe("Validator", function () {
 		    	phone: 12345678901,
 		    	email: 'test@test'
 		    };
+            CreatifyJS.validator.types.notEmpty.validated = false;
+            CreatifyJS.validator.types.validEmail.validated = false;
+            CreatifyJS.validator.handled.phone = false;
 		});
 		afterEach(function () {
 			this.fixture.find('span').remove();
@@ -104,6 +107,33 @@ describe("Validator", function () {
 			expect(this.fixture.find('#name').next('span').text()).toContain(CreatifyJS.validator.types.notEmpty.instructions);
 			expect(this.fixture.find('#email').next('span').text()).toContain(CreatifyJS.validator.types.validEmail.instructions);
 			expect(this.fixture.find('#phone').next('span').text()).toContain(CreatifyJS.validator.types.maxLen10.instructions);
+		});
+
+	});
+
+	describe("errorHandler being called multiple times", function () {
+		beforeEach(function () {
+		    this.data = {
+		    	name: '',
+		    	phone: 12345678901,
+		    	email: 'test@test'
+		    };
+		    CreatifyJS.validator.types.notEmpty.validated = false;
+            CreatifyJS.validator.types.validEmail.validated = false;
+            CreatifyJS.validator.handled.phone = false;
+            CreatifyJS.validator.validate(this.data);
+            CreatifyJS.validator.validate(this.data);
+            CreatifyJS.validator.validate(this.data);
+		});
+		afterEach(function () {
+			this.fixture.find('span').remove();
+			delete this.data;
+		});
+
+		it("Only appends the error message once to each field", function () {
+			expect(this.fixture.find('#name').siblings('span').length).toBe(1);
+			expect(this.fixture.find('#email').siblings('span').length).toBe(1);
+			expect(this.fixture.find('#phone').siblings('span').length).toBe(1);
 		});
 
 	});

@@ -7,9 +7,10 @@ window.CreatifyJS = window.CreatifyJS || {};
 		config: {},
 		types: {},
 		messages: [],
+		handled: {},
 
 		validate: function (data) {
-			var i, type, tester, isValid = false;
+			var i, type, tester; 
 
 			for (i in data) {
 				if (data.hasOwnProperty(i)) {
@@ -29,13 +30,15 @@ window.CreatifyJS = window.CreatifyJS || {};
                     // 	}
                     // }
 
-                    isValid = tester.validate(data[i]);
-
-                    if (!isValid) {
+                    if (!tester.validate(data[i])) {
                     	if (typeof tester.errorHandler === 'function') {
                             tester.errorHandler(i);
+                    	} else {
+                    		if (!this.handled[i]) {
+                    		    $('#'+i).after('<span>'+tester.instructions+'</span>');	
+                    		    this.handled[i] = true;	
+                    		}
                     	}
-                        $('#'+i).after('<span>'+tester.instructions+'</span>');
                     }
 				}
 			}
@@ -54,35 +57,43 @@ window.CreatifyJS = window.CreatifyJS || {};
     // script as well
 	validator.types = {
 		validEmail: {
+			validated: false,
 			validate: function (value) {
 				return /^(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?$/.test(value);
 			},
 			instructions: 'Please enter a valid email.',
 			errorHandler: function (id) {
 				var el = $('#'+id);
-				el.after('<span>'+this.instructions+'</span>');
+				if (this.validated === false) {
+				    el.after('<span>'+this.instructions+'</span>');	
+				}
+				this.validated = true;
 			}
 		},
 		notEmpty: {
+			validated: false,
 			validate: function (value) {
 				return value !== '';
 			},
 			instructions: 'This field cannot be empty',
 			errorHandler: function (id) {
 				var el = $('#'+id);
-				el.after('<span>'+this.instructions+'</span>');
+				if (this.validated === false) {
+				    el.after('<span>'+this.instructions+'</span>');
+			    }
+			    this.validated = true;
 			}
 		},
 		maxLen10: {
 			validate: function (value) {
-				
+				return value.length < 11;
 			},
 			instructions: 'Please enter no more than 10 characters',
 		}
 	}
 
 	// Add validator to the window.CreatifyJS
-	namespace['validator'] = validator;
+	namespace['validator'] = namespace.validator || validator;
 
 
 
