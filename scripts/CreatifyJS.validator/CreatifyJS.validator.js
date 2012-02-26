@@ -19,16 +19,16 @@ window.CreatifyJS = window.CreatifyJS || {};
 					type = this.config[i];
                     tester = this.types[type];
 
-                    // if (!type) {
-                    // 	continue;
-                    // }
+                    if (!type) {
+                    	continue;
+                    }
 
-                    // if (!tester) {
-                    // 	throw {
-                    // 		name: "ValidationError",
-                    // 		message: "No tester supplied for" + type;
-                    // 	}
-                    // }
+                    if (!tester) {
+                    	throw {
+                    		name: "ValidationError",
+                    		message: "No tester supplied for " + i
+                    	}
+                    }
 
                     if (!tester.validate(data[i])) {
                     	if (typeof tester.errorHandler === 'function') {
