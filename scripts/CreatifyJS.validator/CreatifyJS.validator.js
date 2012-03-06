@@ -1,13 +1,13 @@
 window.CreatifyJS = window.CreatifyJS || {};
 
-(function ($, namespace, undefined) {
+(function ($, window, undefined) {
 	
 	var validator = {
 		
 		config: {},
 		types: {},
 		messages: [],
-		handled: {},
+		handled: [],
 
 		validate: function (data) {
 			var i, type, tester; 
@@ -15,7 +15,6 @@ window.CreatifyJS = window.CreatifyJS || {};
 			for (i in data) {
 				if (data.hasOwnProperty(i)) {
 					
-					// Get name of validator
 					type = this.config[i];
                     tester = this.types[type];
 
@@ -30,37 +29,35 @@ window.CreatifyJS = window.CreatifyJS || {};
                     	}
                     }
 
-                    if (!tester.validate(data[i])) {
-                    	if (typeof tester.errorHandler === 'function') {
-                            tester.errorHandler(i);
-                    	} else {
-                    		if (!this.handled[i]) {
-                    		    $('#'+i).after('<span>'+tester.instructions+'</span>');	
-                    		    this.handled[i] = true;	
-                    		}
+                    if (typeof tester.errorHandler !== 'function') {
+                    	throw {
+                    		name: "ErrorHandlerError",
+                    		message: "No errorHandler supplied for " + i 
                     	}
+                    }
+
+                    if (typeof tester.successHandler !== 'function') {
+                    	throw {
+                    		name: "SuccessHandlerError",
+                    		message: "No successHandler supplied for " + i 
+                    	}
+                    }
+
+                    if (!tester.validate(data[i])) {
+                        tester.errorHandler(i);
+                        this.handled.push(i);
+                    } else {
+                    	tester.successHandler(i);
+                    	this.handled.splice(i, 1);
                     }
 				}
 			}
+			return this.handled.length === 0;
 		}
 	};
 
-	// Add validator to the window.CreatifyJS
-	namespace['validator'] = namespace.validator || validator;
+	// Export validator to window.CreatifyJS
+	window.CreatifyJS['validator'] = window.CreatifyJS.validator || validator;
 
 
-
-	/**
-	* Implementation:
-	* binding key strokes events
-	* to validator.validate
-	*/
-
-	$('form').delegate(':input', 'keypress keyup',
-		function () {
-			var field = this.id;
-			validate.validator({field: this.value});
-		}
-	);
-
-}(jQuery, CreatifyJS));
+}(jQuery, window));
