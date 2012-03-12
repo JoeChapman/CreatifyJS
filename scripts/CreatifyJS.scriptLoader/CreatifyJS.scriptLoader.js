@@ -12,12 +12,12 @@
 			script.onreadystatechange = function() {
 				if (script.readyState === 'loaded' || script.readyState === 'complete') {
 					script.onreadystatechange = null;
-					callback(filename);
+					callback();
 				}	
 			};
 		} else {
 			script.onload = function() {
-				callback(filename);
+				callback();
 			};		
 		}
 			

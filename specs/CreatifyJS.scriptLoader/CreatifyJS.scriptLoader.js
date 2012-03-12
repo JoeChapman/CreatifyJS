@@ -1,19 +1,10 @@
-describe("Script Loader", function () {
-	
+describe("scriptLoader", function () {
+
 	describe("Calling scriptLoader with a filename and a callback", function () {
-		var loader = CreatifyJS.scriptLoader,
-			filename = 'the file name',
-			expectedFilename = '',
-			callback = function (file) {
-				expectedFilename = file;
-			};
-
-		beforeEach(function () {
-			loader(filename, callback);	
-		});
-
-		it("Calls the callback with the filename as the only argument", function () {
-			expect(expectedFilename).toBe('the file name');
+		it("Appends the new script to the document body", function () {
+			CreatifyJS.scriptLoader('http://pathtofile/file.js', function () {});
+			var scripts = $('body').find('script');
+			expect(scripts[scripts.length-1].src).toBe('http://pathtofile/file.js');
 		});
 
 	});
