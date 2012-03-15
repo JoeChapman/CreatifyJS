@@ -2,7 +2,7 @@ var CreatifyJS = CreatifyJS || {};
 
 CreatifyJS.Sorter = function (unsorted, key) {
 
-	var by = function (name, minor) {
+	return unsorted.sort(function (name, minor) {
 		if (typeof name === 'undefined' && typeof minor === 'undefined') {
 			return function (a, b) {
 				if (a === b) {
@@ -32,10 +32,7 @@ CreatifyJS.Sorter = function (unsorted, key) {
 					};
 				}
 			}	
-		} 
-		
-	};
-
-	return unsorted.sort(by(key));
+		} 	
+	}(key));
 
 };
