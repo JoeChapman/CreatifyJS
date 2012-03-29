@@ -1,129 +1,117 @@
 describe("Custom events", function () {
-
-	describe("Calling on() with an event and a callback function", function () {
-		var observer = CreatifyJS.customEvents;
-		beforeEach(function () {
-			observer.on('newEvent', function callback () {});
-		});
-		afterEach(function () {
-			observer.events = {};
-		});
+	beforeEach(function () {
+		observer = CreatifyJS.customEvents;
+	});
+	afterEach(function () {
+		observer.events = {};
+	})
+	describe("Adding an event and a callback function", function () {
+		var	callBack = function () {};
 		it("Should add the callback function to the new event", function () {
+			observer.on('newEvent', callBack);
 			expect(observer.events['newEvent']).toBeDefined();
-			expect(typeof observer.events['newEvent'][0]).toBe('function');
-			expect(observer.events['newEvent'][0].name).toBe('callback');
+			expect(typeof observer.events['newEvent'][0].fn).toBe('function');
 		});
 	});
-	describe("Calling on() with the same event and multiple callback functions", function () {
-		var observer = CreatifyJS.customEvents;
-		beforeEach(function () {
+	describe("Adding multiple callback to the same event", function () {
+		it("Should add each callback to the event", function () {
 			observer.on('newEvent', function callback1 () {});
 			observer.on('newEvent', function callback2 () {});
 			observer.on('newEvent', function callback3 () {});
-		});
-		afterEach(function () {
-			observer.events = {};
-		});
-		it("Should add each callback function to the event", function () {
-			expect(observer.events['newEvent'][0].name).toBe('callback1');
-			expect(observer.events['newEvent'][1].name).toBe('callback2');
-			expect(observer.events['newEvent'][2].name).toBe('callback3');
+			expect(observer.events['newEvent']).toBeDefined();
+			expect(typeof observer.events['newEvent'][0].fn).toBe('function');
+			expect(typeof observer.events['newEvent'][1].fn).toBe('function');
+			expect(typeof observer.events['newEvent'][2].fn).toBe('function');
 		});
 	});
-	describe("Calling on() without a callback function", function () {
-		var observer = CreatifyJS.customEvents;
-		beforeEach(function () {
-			observer.on('newEvent');
-		});
-		afterEach(function () {
-			observer.events = {};
-		});
+	describe("Adding an event without a callback function", function () {
 		it("Should not add the new event", function () {
+			observer.on('newEvent');
 			expect(observer.events['newEvent']).not.toBeDefined();
 		});
 	});
-	describe("Calling off() with an event", function () {
-		var observer = CreatifyJS.customEvents,
-			callBack1 = function () {};
-		beforeEach(function () {
-			// Add multiple callbacks to the event
-			observer.events = {
-				newEvent: [callBack1]
-			};
+	describe("Removing an event", function () {
+		it("Removes the entire event and associated callbacks", function () {
+			observer.on('newEvent');
 			observer.off('newEvent');
-		});
-		afterEach(function () {
-			observer.events = {};
-		});
-		it("Should remove the event and its callback function", function () {
-			expect(observer.events['newEvent'][0]).not.toBeDefined();
-			expect(observer.events['newEvent'].length).toBe(0);
+			expect(observer.events['newEvent']).not.toBeDefined();
 		});
 	});
-	describe("Calling off() with an event and a callback", function () {
-	 	var observer = CreatifyJS.customEvents;
-		describe("When only one callback is registered to the event", function () {
-			var callBack1 = function () {};
-			beforeEach(function () {
-				// Add multiple callbacks to the event
-				observer.events = {
-					newEvent: [callBack1]
-				};
-				observer.off('newEvent', callBack1);
-			});
-			afterEach(function () {
-				observer.events = {};
-			});
-			it("Should removes the callback function", function () {
-				expect(observer.events['newEvent'][0]).not.toBeDefined();
-			});
-		});
-		describe("When multiple callbacks are registered", function () {
-			var callBack1 = function () {},
-				callBack2 = function () {},
-				callBack3 = function () {},
-				callBack4 = function () {};
-			beforeEach(function () {
-				// Add multiple callbacks to the event
-				observer.events = {
-					newEvent: [callBack1, callBack2, callBack3, callBack4]
-				};
-				// Remove one callback
-				observer.off('newEvent', callBack4);
-			});
-			afterEach(function () {
-				observer.events = {};
-			});
-			it("Should remove the callback function from the event", function () {
-				expect(observer.events['newEvent'][0]).toBe(callBack1);
-				expect(observer.events['newEvent'][1]).toBe(callBack2);
-				expect(observer.events['newEvent'][2]).toBe(callBack3);
-				expect(observer.events['newEvent'][3]).not.toBeDefined();
-			});
+	describe("Removing a callback when multiple callbacks are registered", function () {
+		var callBack1 = function () {},
+			callBack2 = function () {},
+			callBack3 = function () {},
+			callBack4 = function () {};
+		it("Removes the callback function but not the event", function () {
+			observer.on('newEvent', callBack1);
+			observer.on('newEvent', callBack2);
+			observer.on('newEvent', callBack3);
+			observer.on('newEvent', callBack4);
+			observer.off('newEvent', callBack2);
+			expect(observer.events['newEvent'][1].fn).not.toBeDefined();
+			expect(observer.events['newEvent']).toBeDefined();
 		});
 	});
-	describe("Calling fire() with an event and data", function () {
-		var observer = CreatifyJS.customEvents,
-			data = {name: 'Joe'},
-			expectedData,
-			flag = false,
-			callBack = function (data) {
-				flag = true;
-				expectedData = data;
-			};
+	describe("Firing the event", function () {
+		var data = {name: 'Joe'},
+			expectedData;
 		beforeEach(function () {
-			observer.events = {
-				newEvent: [callBack]
-			};
-			observer.fire('newEvent', data);
+			callBack = function (data) { expectedData = data; };
+			observer.on('newEvent', callBack);
 		});
 		afterEach(function () {
-			observer.events = {};
+			callBack = null;
+			observer.off('newEvent', callBack);
 		});
-		it("Calls callBack() with data", function () {
-			expect(flag).toBe(true);
-			expect(data).toEqual(expectedData);
-			expect(expectedData.name).toBe('Joe');
+		describe("With data", function () {
+			it("Does not throw an error", function () {
+				expect(function () {
+					observer.fire('newEvent', data);
+				}).not.toThrow();
+			});
+			it("Passes the data to the callback", function () {
+				observer.fire('newEvent', data);
+				expect(data).toEqual(expectedData);
+				expect(expectedData.name).toBe('Joe');
+			});
+		});
+		describe("Without data", function () {
+			it("Does not throw an error", function () {
+				expect(function () {
+					observer.fire('newEvent');
+				}).not.toThrow();
+			});
+		});
+	});
+	describe("Firing an event without a callback", function () {
+		var callBack = null;
+		it("Throws an error", function () {
+			observer.on('newEvent', callBack);
+			expect(function () {
+				observer.fire('newEvent');
+			}).toThrow({
+				name: "CallbackError",
+				message: "Cannot call null callback"
+			});
+		});
+	});
+	describe("Telling the execution to pause", function () {
+		var functions = {},
+			cB1Fired = false, cB2Fired = false, cB3Fired = false, cB4Fired = false,
+			callBack1 = function () { cB1Fired = true; },
+			callBack2 = function () { cB2Fired = true; return 'PAUSE'; },
+			callBack3 = function () { cB3Fired = true; },
+			callBack4 = function () { cB4Fired = true; };
+		it("Pauses all subsequent callbacks from firing", function () {
+			observer.on('newEvent', callBack1);
+			observer.on('newEvent', callBack2);
+			observer.on('newEvent', callBack3);
+			observer.on('newEvent', callBack4);
+			observer.fire('newEvent');
+			expect(cB1Fired).toBe(true);
+			expect(cB2Fired).toBe(true);
+			expect(cB3Fired).toBe(false);
+			expect(cB4Fired).toBe(false);
 		});
 	});
 });
