@@ -17,20 +17,12 @@ describe("Game", function() {
 			}, 0);
 		});
 	});
-	describe("Updating all", function () {
-		var spy = spyOn(CreatifyJS.Player.prototype, "update");
-		var game = new CreatifyJS.Game();
-		game.updateAll();
-		it("Updates the player", function () {
-			expect(spy).toHaveBeenCalled();
-		});
-	});
 	describe("Drawing all", function () {
 		var spyDraw = spyOn(CreatifyJS.Player.prototype, "draw");
 		var spyDrawRect = spyOn(CreatifyJS.Game.prototype, "drawRectangle");
 		var game = new CreatifyJS.Game();
 		game.drawAll();
-		it("Draws a white rectangle", function () {
+		it("Draws the world", function () {
 			expect(spyDrawRect).toHaveBeenCalled();
 			expect(spyDrawRect.mostRecentCall.args[0]).toBe('#fff');
 		});
@@ -38,35 +30,37 @@ describe("Game", function() {
 			expect(spyDraw).toHaveBeenCalled();
 		});
 	});
-	describe("Tapping the keys", function () {
+	describe("Tapping the arrow keys", function () {
 		var game = new CreatifyJS.Game();
-		var spy = spyOn(game.player, "move");
-		var event = $.Event('keydown');
-		describe("To move the player left", function () {
+		var spy = spyOn(game.player, "update");
+		var event = document.createEvent("HTMLEvents");
+    	event.initEvent('keydown', true, true);
+
+		describe("left", function () {
 			event.keyCode = 37;
-			$(document).trigger(event);
-			it("Moves the player left", function () {	
+			document.dispatchEvent(event);
+			it("Updates the player", function () {	
 				expect(spy).toHaveBeenCalled();
 			});
 		});
-		describe("To move the player up", function () {
+		describe("Up", function () {
 			event.keyCode = 38;
-			$(document).trigger(event);
-			it("Moves the player up", function () {	
+			document.dispatchEvent(event);
+			it("Updates the player", function () {	
 				expect(spy).toHaveBeenCalled();
 			});
 		});
-		describe("To move the player right", function () {
+		describe("Right", function () {
 			event.keyCode = 39;
-			$(document).trigger(event);
-			it("Moves the player right", function () {	
+			document.dispatchEvent(event);
+			it("Updates the player", function () {	
 				expect(spy).toHaveBeenCalled();
 			});
 		});
-		describe("To move the player down", function () {
+		describe("Down", function () {
 			event.keyCode = 40;
-			$(document).trigger(event);
-			it("Moves the player down", function () {	
+			document.dispatchEvent(event);
+			it("Updates the player", function () {	
 				expect(spy).toHaveBeenCalled();
 			});
 		});
